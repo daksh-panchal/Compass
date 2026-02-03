@@ -1,5 +1,7 @@
 import os
 from .notion_client_wrapper import notion
+from datetime import datetime
+from models.course_model import Course
 
 COURSES_DB_ID = os.getenv("COURSES_DB_ID")
 if not COURSES_DB_ID:
@@ -22,14 +24,46 @@ def get_courses():
         page_size=100,
     )
 
-    # Here I will extract course names and return them as a list to verify functionality.
-    courses = []
-    for row in response.get("results", []):
-        title = row["properties"]["Course Name"]["title"]
-        if title:
-            courses.append(title[0]["plain_text"])
+    # Here I am returning a list of course objects parsed from the response.
+    return [_parse_course(row) for row in response.get("results", [])]
 
-    return courses
 
+# This function will parse through a row from the "Courses" database in Notion and convert it into a course object.
+def _parse_course(row) -> Course:
+    properties = row["properties"] # Getting all the properties of the row.
+
+    # Now, I will extract each individual property needed to create a Course object.
+    title = properties["Course Name"]["title"] 
+    name = title[0]["plain_text"] if title else "Untitled" 
+
+    current_standing = properties["Current Standing"]["select"]["name"] 
+    cognitive_load = properties["Cognitive Load"]["select"]["name"] 
+    recovery_cost = properties["Recovery Cost"]["select"]["name"] 
+
+    last_worked_raw = properties["Last Worked On"]["date"]
+    last_worked_on = (
+        datetime.fromisoformat(last_worked_raw["start"]).date()
+        if last_worked_raw else None
+    )
+
+    grading_scheme = [
+        item["name"]
+        for item in properties["Grading Scheme"]["multi_select"]
+    ]
+
+    course_type = [
+        item["name"]
+        for item in properties["Course Type"]["multi_select"]
+    ]
+
+    return Course(
+        name=name,
+        current_standing=current_standing,
+        cognitive_load=cognitive_load,
+        recovery_cost=recovery_cost,
+        last_worked_on=last_worked_on,
+        grading_scheme=grading_scheme,
+        course_type=course_type,
+    )
 
 
