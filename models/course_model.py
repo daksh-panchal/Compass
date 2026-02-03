@@ -12,3 +12,4 @@ class Course:
     recovery_cost: str
     grading_scheme: List[str]
     cognitive_load: str
+    next_deadline: date | None

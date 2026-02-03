@@ -56,6 +56,12 @@ def _parse_course(row) -> Course:
         for item in properties["Course Type"]["multi_select"]
     ]
 
+    deadline_raw = properties["Next Assignment/Lab Deadline"]["date"]
+    next_deadline = (
+    datetime.fromisoformat(deadline_raw["start"]).date()
+    if deadline_raw else None
+    )
+
     return Course(
         name=name,
         current_standing=current_standing,
@@ -64,6 +70,7 @@ def _parse_course(row) -> Course:
         last_worked_on=last_worked_on,
         grading_scheme=grading_scheme,
         course_type=course_type,
+        next_deadline=next_deadline,
     )
 
 
