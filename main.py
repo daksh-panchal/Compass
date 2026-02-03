@@ -2,6 +2,9 @@ from tools.courses import get_courses
 from agents.course_status_agent import assess_course_status
 from agents.deadline_agent import assess_deadline
 from agents.planning_agent import plan_tasks
+from agents.scheduling_agent import allocate_time
+
+AVAILABLE_MINUTES = 180 # Setting the total available time in minutes for testing.
 
 courses = get_courses() # Getting the list of courses.
 
@@ -21,6 +24,22 @@ for item in task_plan:
         f"priority_score: {item['priority_score']}"
     )
 
+# Now we will allocate time based on the planned tasks, risk scores, and deadline urgencies.
+
+schedule = allocate_time(task_plan, AVAILABLE_MINUTES)
+
+print("\nSCHEDULING")
+total = 0
+for s in schedule:
+    c = s["course"]
+    print(
+        f"{c.name:<25} → "
+        f"{s['blocks']} blocks "
+        f"({s['minutes']} min)"
+    )
+    total += s["minutes"]
+
+print(f"\nTotal scheduled: {total} / {AVAILABLE_MINUTES} minutes")
 
 """
 PREVIOUS TEST CODE:
