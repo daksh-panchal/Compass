@@ -13,3 +13,10 @@ class Course:
     grading_scheme: List[str]
     cognitive_load: str
     next_deadline: date | None
+
+# These parameters are used to store the assessment results of each course so that the planning agent can read everything from one object.
+    risk_score: int | None = None
+    days_idle: int | None = None
+
+    days_until_deadline: int | None = None
+    deadline_urgency: str | None = None

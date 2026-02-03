@@ -1,6 +1,6 @@
 from datetime import date
 
-# This agent function evaluates the urgency of an upcoming deadline for a course and returns the remaining days and urgency level.
+# This agent function evaluates the urgency of an upcoming deadline for a course and updates the course object accordingly.
 def assess_deadline(course):
 
     if not course.next_deadline:
@@ -17,8 +17,15 @@ def assess_deadline(course):
     else:
         urgency = "Low"
 
-    return {
+    course.days_until_deadline = days_left
+    course.deadline_urgency = urgency
+
+    return course
+"""
+return {
         "course": course,
         "days_left": days_left,
         "urgency": urgency,
     }
+"""
+

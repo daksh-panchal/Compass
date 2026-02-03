@@ -1,6 +1,6 @@
 from datetime import date
 
-# This agent function assesses the status of a course and returns relevant details about the course.
+# This agent function assesses the status of a course and updates the course object.
 def assess_course_status(course):
 
     days_idle = (
@@ -24,10 +24,17 @@ def assess_course_status(course):
     if course.current_standing in ("Behind", "At Risk"):
         risk_score += 2
 
-    return {
+    course.risk_score = risk_score
+    course.days_idle = days_idle
+
+    return course
+
+"""
+return {
         "course": course,
         "risk_score": risk_score,
         "days_idle": days_idle,
         "cognitive_load": course.cognitive_load,
         "recovery_cost": course.recovery_cost,
     }
+"""
