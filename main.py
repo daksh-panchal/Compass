@@ -1,14 +1,45 @@
 from tools.courses import get_courses
-from agents.course_status_agent import assess_course_status
-from agents.deadline_agent import assess_deadline
-from agents.planning_agent import plan_tasks
-from agents.scheduling_agent import allocate_time
+from agents.supervisor_agent import run_supervisor
 
-AVAILABLE_MINUTES = 180 # Setting the total available time in minutes for testing.
 
 courses = get_courses() # Getting the list of courses.
+result = run_supervisor(courses, available_minutes=180) # Running the supervisor agent with 180 available minutes.
 
-for course in courses:
+# The run_supervisor function returns a dictionary with two keys "priorities" and "schedule".
+# Here I am printing out the courses along with their priority scores as well as the recommended schedule, all based on the assessments of all the agents.
+print("\nPRIORITIES")
+for item in result["priorities"]:
+    c = item["course"]
+    print(f"{c.name} | priority {item['priority_score']}")
+
+print("\nSCHEDULE")
+for s in result["schedule"]:
+    print(f"{s['course'].name} → {s['minutes']} min")
+
+
+"""
+PREVIOUS TEST CODE:
+
+statuses = [assess_course_status(c) for c in courses] # Assessing the status of each course.
+deadline_reports = [assess_deadline(c) for c in courses if assess_deadline(c)] # Assessing the deadlines of each course.
+
+for s in statuses:
+    print(
+        s["course"].name,
+        "Risk:", s["risk_score"],
+        "Days Idle:", s["days_idle"]
+    )
+
+# Next, I will print out the deadline details of each course to verify the deadline agent's functionality.
+for d in deadline_reports:
+    print(
+        d["course"].name,
+        "Due in:", d["days_left"], "days,",
+        "Urgency:", d["urgency"]
+    )
+
+
+    for course in courses:
     assess_course_status(course) # Assessing the status of each course.
     assess_deadline(course) # Assessing the deadlines of each course.
 
@@ -40,27 +71,7 @@ for s in schedule:
     total += s["minutes"]
 
 print(f"\nTotal scheduled: {total} / {AVAILABLE_MINUTES} minutes")
-
-"""
-PREVIOUS TEST CODE:
-
-statuses = [assess_course_status(c) for c in courses] # Assessing the status of each course.
-deadline_reports = [assess_deadline(c) for c in courses if assess_deadline(c)] # Assessing the deadlines of each course.
-
-for s in statuses:
-    print(
-        s["course"].name,
-        "Risk:", s["risk_score"],
-        "Days Idle:", s["days_idle"]
-    )
-
-# Next, I will print out the deadline details of each course to verify the deadline agent's functionality.
-for d in deadline_reports:
-    print(
-        d["course"].name,
-        "Due in:", d["days_left"], "days,",
-        "Urgency:", d["urgency"]
-    )
+AVAILABLE_MINUTES = 180 # Setting the total available time in minutes for testing.
 """
 
 
