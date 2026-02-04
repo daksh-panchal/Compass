@@ -1,5 +1,6 @@
 from langgraph.graph import StateGraph, END
 from graph.state import CompassState
+from graph.routing import (route_after_status, route_after_planning, route_after_scheduling)
 
 from graph.nodes.course_status_node import course_status_node
 from graph.nodes.deadline_node import deadline_node
@@ -19,10 +20,35 @@ def build_compass_graph():
 
     graph.set_entry_point("course_status") # The starting node of the graph is the course status node.
 
-    graph.add_edge("course_status", "deadline")
+    graph.add_conditional_edges(
+        "course_status",
+        route_after_status,
+        {
+            "deadline": "deadline",
+            "planning": "planning",
+        },
+    )
+
     graph.add_edge("deadline", "planning")
-    graph.add_edge("planning", "scheduling")
-    graph.add_edge("scheduling", "explanation")
+
+    graph.add_conditional_edges(
+        "planning",
+        route_after_planning,
+        {
+            "scheduling": "scheduling",
+            "end": END,
+        },
+    )
+
+    graph.add_conditional_edges(
+        "scheduling",
+        route_after_scheduling,
+        {
+            "explanation": "explanation",
+            "end": END,
+        },
+    )
+
     graph.add_edge("explanation", END)
 
     return graph.compile()

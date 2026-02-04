@@ -7,3 +7,6 @@ class CompassState(TypedDict):
     priorities: list
     schedule: list
     explanation: str | None
+
+    available_minutes: int
+    explain: bool
