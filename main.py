@@ -1,22 +1,29 @@
 from tools.courses import get_courses
 from agents.supervisor_agent import run_supervisor
+from llm.explainer import explain_plan
 
+def main():
+    courses = get_courses() # Getting the list of courses.
+    result = run_supervisor(courses, available_minutes=180) # Running the supervisor agent with 180 available minutes.
 
-courses = get_courses() # Getting the list of courses.
-result = run_supervisor(courses, available_minutes=180) # Running the supervisor agent with 180 available minutes.
+    # The run_supervisor function returns a dictionary with two keys "priorities" and "schedule".
+    # Here I am printing out the courses along with their priority scores as well as the recommended schedule, all based on the assessments of all the agents.
+    print("\nPRIORITIES")
+    for item in result["priorities"]:
+        c = item["course"]
+        print(f"{c.name} | priority {item['priority_score']}")
 
-# The run_supervisor function returns a dictionary with two keys "priorities" and "schedule".
-# Here I am printing out the courses along with their priority scores as well as the recommended schedule, all based on the assessments of all the agents.
-print("\nPRIORITIES")
-for item in result["priorities"]:
-    c = item["course"]
-    print(f"{c.name} | priority {item['priority_score']}")
+    print("\nSCHEDULE")
+    for s in result["schedule"]:
+        print(f"{s['course'].name} → {s['minutes']} min")
 
-print("\nSCHEDULE")
-for s in result["schedule"]:
-    print(f"{s['course'].name} → {s['minutes']} min")
+    # Getting and printing an explanation of the entire plan including priorities and schedule using the LLM explainer.
+    explanation = explain_plan(result["priorities"], result["schedule"])
+    print(explanation)
 
-
+if __name__ == "__main__":
+    main()
+    
 """
 PREVIOUS TEST CODE:
 
