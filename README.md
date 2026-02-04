@@ -145,8 +145,6 @@ This provides:
 - **Composable by Design**  
   Agents can be reordered, replaced, or extended without rewriting the system, enabling future features such as long-term planning or energy-aware scheduling.
 
-Compass treats LLMs as *explainers*, not decision-makers.
-
 ---
 
 ## 🚀 Ideas for Future Expansion
